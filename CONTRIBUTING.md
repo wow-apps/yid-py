@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your interest in contributing to yid! This guide will help you get started.
+Thank you for your interest in contributing to youtube-id! This guide will help you get started.
 
 ## Getting Started
 
