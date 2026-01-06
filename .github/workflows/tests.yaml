@@ -1,0 +1,97 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/*'
+  pull_request:
+    branches:
+      - main
+      - 'release/*'
+
+jobs:
+  check_changes:
+    name: Check File Changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_python_changes: ${{ steps.changes.outputs.python }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Check for changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            python:
+              - '**/*.py'
+              - 'pyproject.toml'
+              - 'poetry.lock'
+
+  tests:
+    name: Tests & Coverage
+    runs-on: ubuntu-latest
+    needs: check_changes
+    if: needs.check_changes.outputs.has_python_changes == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Run Tests with Coverage
+        run: |
+          echo "=== Running Tests ==="
+          poetry run pytest --cov=yid_py --cov-report=term-missing --cov-fail-under=95
+
+  status:
+    name: tests_passed
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - tests
+    steps:
+      - name: Check job results
+        run: |
+          tests_result="${{ needs.tests.result }}"
+
+          echo "Tests: $tests_result"
+
+          # Fail if tests failed
+          if [[ "$tests_result" == "failure" ]]; then
+            echo "::error::Tests failed"
+            exit 1
+          fi
+
+          # Success if tests passed or were skipped
+          if [[ "$tests_result" == "success" || "$tests_result" == "skipped" ]]; then
+            echo "::notice::Tests passed"
+            exit 0
+          fi
+
+          # Catch any unexpected state
+          echo "::error::Unexpected job state"
+          exit 1

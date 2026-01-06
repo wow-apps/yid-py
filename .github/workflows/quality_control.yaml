@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - 'release/*'
   pull_request:
     branches:
       - main
+      - 'release/*'
 
 jobs:
   check_changes:
@@ -79,11 +81,6 @@ jobs:
         run: |
           echo "=== Mypy Type Check ==="
           poetry run mypy yid_py/
-
-      - name: Pytest with Coverage
-        run: |
-          echo "=== Running Tests ==="
-          poetry run pytest --cov=yid_py --cov-report=term-missing --cov-fail-under=95
 
   markdown_quality:
     name: Markdown Quality
