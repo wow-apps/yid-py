@@ -94,31 +94,27 @@ See `pyproject.toml` for `[tool.pytest.ini_options]` section.
 
 ## Markdown
 
-We use **mdformat** for formatting and **pymarkdownlnt** for linting.
+We use **pymarkdownlnt** for linting.
 
 ### Rules
 
 - Headings must have 1 blank line above
-- No trailing spaces
-- Single newline at end of file
+- Duplicate headings allowed for siblings only
+- No line length limit (MD013 disabled)
 
 ### Commands
 
 ```bash
-# Format markdown
-mdformat README.md
-
-# Lint markdown
-pymarkdownlnt scan README.md
+# Lint markdown files
+pymarkdown --config .pymarkdown scan README.md CONTRIBUTING.md
 ```
 
 ### Configuration
 
-See `.markdownlint.json` for linting rules.
+See `.pymarkdown` for linting rules.
 
 ### Useful Links
 
-- [mdformat Documentation](https://mdformat.readthedocs.io/)
 - [pymarkdownlnt Documentation](https://github.com/jackdewinter/pymarkdown)
 - [Markdown Guide](https://www.markdownguide.org/)
 
