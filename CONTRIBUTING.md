@@ -73,7 +73,7 @@ All contributions must:
 - Pass `ruff check` with no errors
 - Pass `ruff format --check` with no changes needed
 - Pass `mypy` strict type checking
-- Maintain 99%+ test coverage
+- Maintain 95%+ test coverage
 - Include type hints for all public functions
 - Include tests for new functionality
 

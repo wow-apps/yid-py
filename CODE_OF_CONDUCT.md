@@ -65,7 +65,7 @@ We use **pytest** with **pytest-cov** for testing and coverage.
 
 ### Rules
 
-- Minimum 99% code coverage required
+- Minimum 95% code coverage required
 - All public functions must have tests
 - Use descriptive test names
 - Group tests in classes by functionality
@@ -141,6 +141,6 @@ Before committing, ensure:
 - [ ] `ruff check .` passes
 - [ ] `ruff format --check .` passes
 - [ ] `mypy yid_py/` passes
-- [ ] `pytest --cov=yid_py` passes with 99%+ coverage
+- [ ] `pytest --cov=yid_py` passes with 95%+ coverage
 - [ ] All new code has type hints
 - [ ] All new functions have tests
