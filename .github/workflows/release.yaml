@@ -68,7 +68,7 @@ jobs:
 
       - name: Commit release version
         id: auto-commit
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: ":robot: Bump version to ${{ env.VERSION }}"
           branch: main
@@ -100,7 +100,7 @@ jobs:
           token: ${{ secrets.CI_GITHUB_TOKEN }}
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.10'
 
