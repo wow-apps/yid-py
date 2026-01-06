@@ -67,7 +67,7 @@ jobs:
     if: needs.validate_naming.outputs.branch_valid == 'true' && needs.validate_naming.outputs.pr_valid == 'true'
     steps:
       - name: Assign PR to owner
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.CI_GITHUB_TOKEN }}
           script: |
@@ -80,7 +80,7 @@ jobs:
             console.log('Assigned PR to wow-apps');
 
       - name: Add label to PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.CI_GITHUB_TOKEN }}
           script: |
