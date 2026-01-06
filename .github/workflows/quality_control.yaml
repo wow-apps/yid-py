@@ -167,4 +167,25 @@ jobs:
     steps:
       - name: Check job results
         run: |
-          echo "::notice::Ready to go"
+          python_result="${{ needs.python_quality.result }}"
+          markdown_result="${{ needs.markdown_quality.result }}"
+
+          echo "Python Quality: $python_result"
+          echo "Markdown Quality: $markdown_result"
+
+          # Fail if any job failed
+          if [[ "$python_result" == "failure" ]] || [[ "$markdown_result" == "failure" ]]; then
+            echo "::error::Quality control failed"
+            exit 1
+          fi
+
+          # Success if all jobs passed or were skipped
+          if [[ "$python_result" == "success" || "$python_result" == "skipped" ]] && \
+             [[ "$markdown_result" == "success" || "$markdown_result" == "skipped" ]]; then
+            echo "::notice::Quality control passed"
+            exit 0
+          fi
+
+          # Catch any unexpected state
+          echo "::error::Unexpected job state"
+          exit 1
