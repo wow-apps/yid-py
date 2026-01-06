@@ -1,0 +1,133 @@
+name: Naming Conventions
+
+on:
+  pull_request:
+    branches:
+      - main
+      - 'release/*'
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  validate_naming:
+    name: Validate Naming
+    runs-on: ubuntu-latest
+    outputs:
+      branch_valid: ${{ steps.validate.outputs.branch_valid }}
+      pr_valid: ${{ steps.validate.outputs.pr_valid }}
+      label: ${{ steps.validate.outputs.label }}
+    steps:
+      - name: Validate Branch and PR Name
+        id: validate
+        run: |
+          branch_name="${{ github.head_ref }}"
+          pr_title="${{ github.event.pull_request.title }}"
+
+          echo "Branch: $branch_name"
+          echo "PR Title: $pr_title"
+
+          # Valid prefixes
+          prefixes="feature/|fix/|docs/|refactor/|test/"
+
+          # Validate branch name
+          if [[ "$branch_name" =~ ^($prefixes) ]]; then
+            echo "branch_valid=true" >> $GITHUB_OUTPUT
+            echo "::notice::Branch name '$branch_name' follows naming convention"
+
+            # Determine label based on branch prefix
+            if [[ "$branch_name" == feature/* ]]; then
+              echo "label=feature" >> $GITHUB_OUTPUT
+            elif [[ "$branch_name" == fix/* ]]; then
+              echo "label=bug" >> $GITHUB_OUTPUT
+            elif [[ "$branch_name" == docs/* ]]; then
+              echo "label=documentation" >> $GITHUB_OUTPUT
+            elif [[ "$branch_name" == refactor/* ]]; then
+              echo "label=refactoring" >> $GITHUB_OUTPUT
+            elif [[ "$branch_name" == test/* ]]; then
+              echo "label=refactoring" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "branch_valid=false" >> $GITHUB_OUTPUT
+            echo "::error::Branch name '$branch_name' must start with: feature/, fix/, docs/, refactor/, or test/"
+          fi
+
+          # Validate PR title (case-insensitive)
+          pr_title_lower=$(echo "$pr_title" | tr '[:upper:]' '[:lower:]')
+          if [[ "$pr_title_lower" =~ ^($prefixes) ]]; then
+            echo "pr_valid=true" >> $GITHUB_OUTPUT
+            echo "::notice::PR title follows naming convention"
+          else
+            echo "pr_valid=false" >> $GITHUB_OUTPUT
+            echo "::error::PR title '$pr_title' must start with: feature/, fix/, docs/, refactor/, or test/"
+          fi
+
+  assign_and_label:
+    name: Assign and Label PR
+    runs-on: ubuntu-latest
+    needs: validate_naming
+    if: needs.validate_naming.outputs.branch_valid == 'true' && needs.validate_naming.outputs.pr_valid == 'true'
+    steps:
+      - name: Assign PR to owner
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.CI_GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              assignees: ['wow-apps']
+            });
+            console.log('Assigned PR to wow-apps');
+
+      - name: Add label to PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.CI_GITHUB_TOKEN }}
+          script: |
+            const label = '${{ needs.validate_naming.outputs.label }}';
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [label]
+            });
+            console.log(`Added label: ${label}`);
+
+  status:
+    name: naming_passed
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - validate_naming
+      - assign_and_label
+    steps:
+      - name: Check job results
+        run: |
+          branch_valid="${{ needs.validate_naming.outputs.branch_valid }}"
+          pr_valid="${{ needs.validate_naming.outputs.pr_valid }}"
+          assign_result="${{ needs.assign_and_label.result }}"
+
+          echo "Branch valid: $branch_valid"
+          echo "PR valid: $pr_valid"
+          echo "Assign and label: $assign_result"
+
+          # Fail if naming validation failed
+          if [[ "$branch_valid" != "true" ]] || [[ "$pr_valid" != "true" ]]; then
+            echo "::error::Naming convention validation failed"
+            exit 1
+          fi
+
+          # Success if validation passed (assign/label may be skipped if no token)
+          if [[ "$assign_result" == "success" || "$assign_result" == "skipped" ]]; then
+            echo "::notice::Naming conventions passed"
+            exit 0
+          fi
+
+          # Fail if assign/label failed
+          if [[ "$assign_result" == "failure" ]]; then
+            echo "::error::Failed to assign or label PR"
+            exit 1
+          fi
+
+          echo "::notice::Naming conventions passed"
+          exit 0

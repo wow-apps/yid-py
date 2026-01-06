@@ -44,12 +44,11 @@ packages = [{include = "yid_py"}]
 python = "^3.10"
 
 [tool.poetry.group.dev.dependencies]
-mdformat = "^0.7"
-pymarkdownlnt = "^0.9"
 ruff = "^0.8"
 pytest = "^9.0"
 pytest-cov = "^6.0"
 mypy = "^1.19"
+pymarkdownlnt = "^0.9"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

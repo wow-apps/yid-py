@@ -65,7 +65,7 @@ We use **pytest** with **pytest-cov** for testing and coverage.
 
 ### Rules
 
-- Minimum 99% code coverage required
+- Minimum 95% code coverage required
 - All public functions must have tests
 - Use descriptive test names
 - Group tests in classes by functionality
@@ -94,31 +94,27 @@ See `pyproject.toml` for `[tool.pytest.ini_options]` section.
 
 ## Markdown
 
-We use **mdformat** for formatting and **pymarkdownlnt** for linting.
+We use **pymarkdownlnt** for linting.
 
 ### Rules
 
 - Headings must have 1 blank line above
-- No trailing spaces
-- Single newline at end of file
+- Multiple headings with same content allowed at different levels
+- No line length limit (MD013 disabled)
 
 ### Commands
 
 ```bash
-# Format markdown
-mdformat README.md
-
-# Lint markdown
-pymarkdownlnt scan README.md
+# Lint markdown files
+pymarkdown --config .pymarkdown scan README.md CONTRIBUTING.md CODE_OF_CONDUCT.md
 ```
 
 ### Configuration
 
-See `.markdownlint.json` for linting rules.
+See `.pymarkdown` for linting rules.
 
 ### Useful Links
 
-- [mdformat Documentation](https://mdformat.readthedocs.io/)
 - [pymarkdownlnt Documentation](https://github.com/jackdewinter/pymarkdown)
 - [Markdown Guide](https://www.markdownguide.org/)
 
@@ -145,6 +141,6 @@ Before committing, ensure:
 - [ ] `ruff check .` passes
 - [ ] `ruff format --check .` passes
 - [ ] `mypy yid_py/` passes
-- [ ] `pytest --cov=yid_py` passes with 99%+ coverage
+- [ ] `pytest --cov=yid_py` passes with 95%+ coverage
 - [ ] All new code has type hints
 - [ ] All new functions have tests

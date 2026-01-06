@@ -1,0 +1,5 @@
+# Code Owners for yid-py
+# These owners will be requested for review when someone opens a pull request.
+
+# Default owner for all files
+* @wow-apps
