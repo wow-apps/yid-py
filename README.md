@@ -1,11 +1,18 @@
-# yid-py
+# YouTubeID for Python
 
 Generate YouTube-style short IDs from numbers. Lightweight, fast, and reversible base62 encoder with optional obfuscation.
 
-[![PyPI version](https://badge.fury.io/py/yid-py.svg)](https://badge.fury.io/py/yid-py)
+[![PyPI version](https://badge.fury.io/py/yid.svg)](https://badge.fury.io/py/yid)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/wow-apps/yid-py)
+
+## Other programming languages
+
+- **PHP**: [kvz/youtube-id](https://github.com/kvz/youtube-id)
+- **Python**: [wow-apps/yid-py](https://github.com/wow-apps/yid-py/)
+- **TypeScript**: [wow-apps/yid-ts](https://github.com/wow-apps/yid-ts/)
+- **Go Lang**: [wow-apps/yid-go](https://github.com/wow-apps/yid-go/)
 
 ## Features
 
@@ -18,13 +25,13 @@ Generate YouTube-style short IDs from numbers. Lightweight, fast, and reversible
 ## Installation
 
 ```bash
-pip install yid-py
+pip install yid
 ```
 
 Or with Poetry:
 
 ```bash
-poetry add yid-py
+poetry add yid
 ```
 
 ## Quick Start

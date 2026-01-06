@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug to help us improve yid-py
+about: Report a bug to help us improve yid
 title: "[BUG] "
 labels: bug
 assignees: ""
@@ -12,7 +12,7 @@ A clear and concise description of the bug.
 
 ## Steps to Reproduce
 
-1. Install yid-py: `pip install yid-py`
+1. Install yid: `pip install yid`
 2. Run the following code:
 
 ```python
@@ -40,7 +40,7 @@ Paste the full error message/traceback here
 ## Environment
 
 - **Python version**: (e.g., 3.10.15)
-- **yid-py version**: (e.g., 1.0.0)
+- **yid version**: (e.g., 1.0.0)
 - **OS**: (e.g., macOS 14.0, Ubuntu 22.04, Windows 11)
 - **Installation method**: (pip, poetry, etc.)
 
