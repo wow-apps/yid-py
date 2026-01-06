@@ -44,9 +44,9 @@ packages = [{include = "yid_py"}]
 python = "^3.10"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.8"
+ruff = "^0.14"
 pytest = "^9.0"
-pytest-cov = "^6.0"
+pytest-cov = "^7.0"
 mypy = "^1.19"
 pymarkdownlnt = "^0.9"
 
