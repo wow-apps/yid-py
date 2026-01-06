@@ -65,7 +65,19 @@ jobs:
       - name: Run Tests with Coverage
         run: |
           echo "=== Running Unit Tests ==="
-          poetry run pytest --cov=yid_py --cov-report=term-missing --cov-fail-under=95
+          poetry run pytest --cov=yid_py --cov-report=term-missing --cov-report=json --cov-fail-under=95
+
+      - name: Report Coverage
+        if: always()
+        run: |
+          if [ -f coverage.json ]; then
+            coverage=$(python -c "import json; print(round(json.load(open('coverage.json'))['totals']['percent_covered'], 1))")
+            if (( $(echo "$coverage >= 95" | bc -l) )); then
+              echo "::notice::Test coverage: ${coverage}% (threshold: 95%)"
+            else
+              echo "::warning::Test coverage: ${coverage}% is below threshold of 95%"
+            fi
+          fi
 
   integration_tests:
     name: Integration Tests (Python ${{ matrix.python-version }})
