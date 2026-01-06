@@ -119,41 +119,6 @@ jobs:
           echo "=== Markdown Lint ==="
           poetry run pymarkdown --config .pymarkdown scan README.md CONTRIBUTING.md CODE_OF_CONDUCT.md
 
-  summary:
-    name: Quality Summary
-    runs-on: ubuntu-latest
-    needs: [check_changes, python_quality, markdown_quality]
-    if: always()
-    steps:
-      - name: Check Results
-        run: |
-          echo "=== Quality Control Summary ==="
-
-          if [[ "${{ needs.check_changes.outputs.has_python_changes }}" == "true" ]]; then
-            if [[ "${{ needs.python_quality.result }}" == "success" ]]; then
-              echo "✅ Python Quality: Passed"
-            elif [[ "${{ needs.python_quality.result }}" == "failure" ]]; then
-              echo "❌ Python Quality: Failed"
-            fi
-          else
-            echo "⏭️ Python Quality: Skipped (no changes)"
-          fi
-
-          if [[ "${{ needs.check_changes.outputs.has_markdown_changes }}" == "true" ]]; then
-            if [[ "${{ needs.markdown_quality.result }}" == "success" ]]; then
-              echo "✅ Markdown Quality: Passed"
-            elif [[ "${{ needs.markdown_quality.result }}" == "failure" ]]; then
-              echo "❌ Markdown Quality: Failed"
-            fi
-          else
-            echo "⏭️ Markdown Quality: Skipped (no changes)"
-          fi
-
-          # Fail if any required job failed
-          if [[ "${{ needs.python_quality.result }}" == "failure" ]] || [[ "${{ needs.markdown_quality.result }}" == "failure" ]]; then
-            exit 1
-          fi
-
   status:
     name: quality_control_passed
     runs-on: ubuntu-latest

@@ -106,7 +106,7 @@ We use **pymarkdownlnt** for linting.
 
 ```bash
 # Lint markdown files
-pymarkdown --config .pymarkdown scan README.md CONTRIBUTING.md
+pymarkdown --config .pymarkdown scan README.md CONTRIBUTING.md CODE_OF_CONDUCT.md
 ```
 
 ### Configuration
