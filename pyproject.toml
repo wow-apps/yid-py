@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "yid-py"
+version = "1.0.0"
+description = "Generate YouTube-style short IDs from numbers. Lightweight, fast, and reversible base62 encoder with optional obfuscation."
+authors = [
+    "Oleksii Samara <oleksii@wildsoft.io>",
+    "Kevin van Zonneveld <kevin@transloadit.com>"
+]
+license = "MIT"
+readme = "README.md"
+keywords = [
+    "youtube-id",
+    "short-id",
+    "base62",
+    "hashid",
+    "url-shortener",
+    "id-generator",
+    "encoder",
+    "obfuscation",
+    "alphanumeric",
+    "unique-id",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+packages = [{include = "yid_py"}]
+
+[tool.poetry.urls]
+"Homepage" = "https://github.com/wow-apps/yid-py"
+"Bug Tracker" = "https://github.com/wow-apps/yid-py/issues"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
