@@ -18,46 +18,46 @@ jobs:
     steps:
       - name: Validate Branch and PR Name
         id: validate
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          branch_name="${{ github.head_ref }}"
-          pr_title="${{ github.event.pull_request.title }}"
-
-          echo "Branch: $branch_name"
-          echo "PR Title: $pr_title"
+          echo "Branch: $BRANCH_NAME"
+          echo "PR Title: $PR_TITLE"
 
           # Valid prefixes
           prefixes="feature/|fix/|docs/|refactor/|test/|dependabot/"
 
           # Validate branch name
-          if [[ "$branch_name" =~ ^($prefixes) ]]; then
+          if [[ "$BRANCH_NAME" =~ ^($prefixes) ]]; then
             echo "branch_valid=true" >> $GITHUB_OUTPUT
-            echo "::notice::Branch name '$branch_name' follows naming convention"
+            echo "::notice::Branch name '$BRANCH_NAME' follows naming convention"
 
             # Determine label based on branch prefix
-            if [[ "$branch_name" == feature/* ]]; then
+            if [[ "$BRANCH_NAME" == feature/* ]]; then
               echo "label=feature" >> $GITHUB_OUTPUT
-            elif [[ "$branch_name" == fix/* ]]; then
+            elif [[ "$BRANCH_NAME" == fix/* ]]; then
               echo "label=bug" >> $GITHUB_OUTPUT
-            elif [[ "$branch_name" == docs/* ]]; then
+            elif [[ "$BRANCH_NAME" == docs/* ]]; then
               echo "label=documentation" >> $GITHUB_OUTPUT
-            elif [[ "$branch_name" == refactor/* ]]; then
+            elif [[ "$BRANCH_NAME" == refactor/* ]]; then
               echo "label=refactoring" >> $GITHUB_OUTPUT
-            elif [[ "$branch_name" == test/* ]]; then
+            elif [[ "$BRANCH_NAME" == test/* ]]; then
               echo "label=refactoring" >> $GITHUB_OUTPUT
             fi
           else
             echo "branch_valid=false" >> $GITHUB_OUTPUT
-            echo "::error::Branch name '$branch_name' must start with: feature/, fix/, docs/, refactor/, or test/"
+            echo "::error::Branch name '$BRANCH_NAME' must start with: feature/, fix/, docs/, refactor/, or test/"
           fi
 
           # Validate PR title (case-insensitive)
-          pr_title_lower=$(echo "$pr_title" | tr '[:upper:]' '[:lower:]')
+          pr_title_lower=$(echo "$PR_TITLE" | tr '[:upper:]' '[:lower:]')
           if [[ "$pr_title_lower" =~ ^($prefixes) ]]; then
             echo "pr_valid=true" >> $GITHUB_OUTPUT
             echo "::notice::PR title follows naming convention"
           else
             echo "pr_valid=false" >> $GITHUB_OUTPUT
-            echo "::error::PR title '$pr_title' must start with: feature/, fix/, docs/, refactor/, or test/"
+            echo "::error::PR title '$PR_TITLE' must start with: feature/, fix/, docs/, refactor/, or test/"
           fi
 
   assign_and_label:
