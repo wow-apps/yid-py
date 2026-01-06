@@ -191,7 +191,7 @@ def _num_to_alpha(number: int, dictionary: str, pad_up: int = 0) -> str:
     t = int(math.log(number, _DICT_LEN))
 
     while t >= 0:
-        bcp = _DICT_LEN ** t
+        bcp = _DICT_LEN**t
         index = (number // bcp) % _DICT_LEN
         output.append(dictionary[index])
         number -= index * bcp
