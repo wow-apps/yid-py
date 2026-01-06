@@ -37,11 +37,11 @@ classifiers = [
 packages = [{include = "yid_py"}]
 
 [tool.poetry.urls]
-"Homepage" = "https://github.com/wow-apps/yid-py"
-"Repository" = "https://github.com/wow-apps/yid-py"
-"Documentation" = "https://github.com/wow-apps/yid-py#readme"
-"Bug Tracker" = "https://github.com/wow-apps/yid-py/issues"
-"Changelog" = "https://github.com/wow-apps/yid-py/releases"
+"Homepage" = "https://github.com/wow-apps/youtube-id-py"
+"Repository" = "https://github.com/wow-apps/youtube-id-py"
+"Documentation" = "https://github.com/wow-apps/youtube-id-py#readme"
+"Bug Tracker" = "https://github.com/wow-apps/youtube-id-py/issues"
+"Changelog" = "https://github.com/wow-apps/youtube-id-py/releases"
 
 [tool.poetry.dependencies]
 python = "^3.10"
