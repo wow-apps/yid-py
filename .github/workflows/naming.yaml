@@ -50,8 +50,9 @@ jobs:
             echo "::error::Branch name '$branch_name' must start with: feature/, fix/, docs/, refactor/, or test/"
           fi
 
-          # Validate PR title
-          if [[ "$pr_title" =~ ^($prefixes) ]]; then
+          # Validate PR title (case-insensitive)
+          pr_title_lower=$(echo "$pr_title" | tr '[:upper:]' '[:lower:]')
+          if [[ "$pr_title_lower" =~ ^($prefixes) ]]; then
             echo "pr_valid=true" >> $GITHUB_OUTPUT
             echo "::notice::PR title follows naming convention"
           else
