@@ -30,8 +30,8 @@ jobs:
               - 'pyproject.toml'
               - 'poetry.lock'
 
-  tests:
-    name: Tests & Coverage
+  unit_tests:
+    name: Unit Tests & Coverage
     runs-on: ubuntu-latest
     needs: check_changes
     if: needs.check_changes.outputs.has_python_changes == 'true'
@@ -64,31 +64,131 @@ jobs:
 
       - name: Run Tests with Coverage
         run: |
-          echo "=== Running Tests ==="
+          echo "=== Running Unit Tests ==="
           poetry run pytest --cov=yid_py --cov-report=term-missing --cov-fail-under=95
+
+  integration_tests:
+    name: Integration Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    needs: check_changes
+    if: needs.check_changes.outputs.has_python_changes == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      - name: Run Integration Tests
+        run: |
+          echo "=== Integration Tests for Python ${{ matrix.python-version }} ==="
+          python -c "
+          import sys
+          print(f'Python version: {sys.version}')
+          print()
+
+          # Import package
+          import yid_py
+          print(f'yid_py version: {yid_py.__version__}')
+          print()
+
+          # Test 1: Basic encoding/decoding
+          print('Test 1: Basic encoding/decoding')
+          encoded = yid_py.to_alphanumeric(12345)
+          decoded = yid_py.to_numeric(encoded)
+          assert encoded == 'dnh', f'Expected dnh, got {encoded}'
+          assert decoded == 12345, f'Expected 12345, got {decoded}'
+          print(f'  12345 -> {encoded} -> {decoded} ✓')
+
+          # Test 2: Zero and boundary values
+          print('Test 2: Zero and boundary values')
+          assert yid_py.to_alphanumeric(0) == 'a'
+          assert yid_py.to_alphanumeric(61) == 'Z'
+          assert yid_py.to_alphanumeric(62) == 'ba'
+          print('  0 -> a, 61 -> Z, 62 -> ba ✓')
+
+          # Test 3: Secure key
+          print('Test 3: Secure key obfuscation')
+          secure_encoded = yid_py.to_alphanumeric(12345, secure_key='secret')
+          secure_decoded = yid_py.to_numeric(secure_encoded, secure_key='secret')
+          assert secure_encoded != 'dnh', 'Secure encoding should differ'
+          assert secure_decoded == 12345, f'Expected 12345, got {secure_decoded}'
+          print(f'  12345 (secure) -> {secure_encoded} -> {secure_decoded} ✓')
+
+          # Test 4: Transform
+          print('Test 4: Case transformation')
+          upper = yid_py.to_alphanumeric(12345, transform=yid_py.Transform.UPPER)
+          lower = yid_py.to_alphanumeric(12345, transform=yid_py.Transform.LOWER)
+          assert upper == 'DNH', f'Expected DNH, got {upper}'
+          assert lower == 'dnh', f'Expected dnh, got {lower}'
+          print(f'  UPPER: {upper}, LOWER: {lower} ✓')
+
+          # Test 5: Encoder class
+          print('Test 5: Encoder class')
+          enc = yid_py.create(secure_key='test')
+          enc_result = enc.encode(12345)
+          dec_result = enc.decode(enc.encode_raw(12345))
+          assert dec_result == 12345, f'Expected 12345, got {dec_result}'
+          print(f'  Encoder: encode={enc_result}, decode={dec_result} ✓')
+
+          # Test 6: Large numbers
+          print('Test 6: Large numbers')
+          large = 10**12
+          large_encoded = yid_py.to_alphanumeric(large)
+          large_decoded = yid_py.to_numeric(large_encoded)
+          assert large_decoded == large, f'Expected {large}, got {large_decoded}'
+          print(f'  {large} -> {large_encoded} -> {large_decoded} ✓')
+
+          # Test 7: Roundtrip consistency
+          print('Test 7: Roundtrip consistency')
+          test_numbers = [0, 1, 100, 1000, 12345, 999999, 10**9]
+          for num in test_numbers:
+              result = yid_py.to_numeric(yid_py.to_alphanumeric(num))
+              assert result == num, f'Roundtrip failed for {num}'
+          print(f'  All {len(test_numbers)} roundtrips passed ✓')
+
+          print()
+          print('=== All integration tests passed! ===')
+          "
 
   status:
     name: tests_passed
     runs-on: ubuntu-latest
     if: always()
     needs:
-      - tests
+      - unit_tests
+      - integration_tests
     steps:
       - name: Check job results
         run: |
-          tests_result="${{ needs.tests.result }}"
+          unit_result="${{ needs.unit_tests.result }}"
+          integration_result="${{ needs.integration_tests.result }}"
 
-          echo "Tests: $tests_result"
+          echo "Unit Tests: $unit_result"
+          echo "Integration Tests: $integration_result"
 
-          # Fail if tests failed
-          if [[ "$tests_result" == "failure" ]]; then
+          # Fail if any job failed
+          if [[ "$unit_result" == "failure" ]] || [[ "$integration_result" == "failure" ]]; then
             echo "::error::Tests failed"
             exit 1
           fi
 
-          # Success if tests passed or were skipped
-          if [[ "$tests_result" == "success" || "$tests_result" == "skipped" ]]; then
-            echo "::notice::Tests passed"
+          # Success if all jobs passed or were skipped
+          if [[ "$unit_result" == "success" || "$unit_result" == "skipped" ]] && \
+             [[ "$integration_result" == "success" || "$integration_result" == "skipped" ]]; then
+            echo "::notice::All tests passed"
             exit 0
           fi
 
