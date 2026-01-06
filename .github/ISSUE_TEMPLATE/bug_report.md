@@ -1,38 +1,63 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
-
+name: Bug Report
+about: Report a bug to help us improve yid-py
+title: "[BUG] "
+labels: bug
+assignees: ""
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Description
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+A clear and concise description of the bug.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Steps to Reproduce
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+1. Install yid-py: `pip install yid-py`
+2. Run the following code:
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+```python
+import yid_py
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+# Your code here
+```
 
-**Additional context**
-Add any other context about the problem here.
+3. See error
+
+## Expected Behavior
+
+What you expected to happen.
+
+## Actual Behavior
+
+What actually happened.
+
+## Error Message
+
+```
+Paste the full error message/traceback here
+```
+
+## Environment
+
+- **Python version**: (e.g., 3.10.15)
+- **yid-py version**: (e.g., 1.0.0)
+- **OS**: (e.g., macOS 14.0, Ubuntu 22.04, Windows 11)
+- **Installation method**: (pip, poetry, etc.)
+
+## Minimal Reproducible Example
+
+```python
+import yid_py
+
+# Minimal code that reproduces the issue
+```
+
+## Additional Context
+
+Add any other context about the problem here (screenshots, related issues, etc.)
+
+## Checklist
+
+- [ ] I have searched existing issues to ensure this bug hasn't been reported
+- [ ] I have included a minimal reproducible example
+- [ ] I have included the full error message/traceback
