@@ -99,7 +99,7 @@ We use **pymarkdownlnt** for linting.
 ### Rules
 
 - Headings must have 1 blank line above
-- Duplicate headings allowed for siblings only
+- Multiple headings with same content allowed at different levels
 - No line length limit (MD013 disabled)
 
 ### Commands

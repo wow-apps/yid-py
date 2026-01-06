@@ -171,7 +171,7 @@ def _secure_dictionary(secure_key: str) -> str:
     )
 
     paired = sorted(
-        zip(secure_hash[:_DICT_LEN], _DICTIONARY, strict=False),
+        zip(secure_hash[:_DICT_LEN], _DICTIONARY, strict=True),
         key=lambda x: x[0],
         reverse=True,
     )
