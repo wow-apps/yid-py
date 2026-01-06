@@ -1,0 +1,73 @@
+name: Create Release
+
+run-name: "Release ${{ github.event.inputs.version }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g. 1.4.2)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  CI_PYPI_TOKEN: ${{ secrets.CI_PYPI_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+  GITHUB_USER: ${{ vars.CI_GITHUB_USER }}
+  GITHUB_USER_EMAIL: ${{ vars.CI_GITHUB_USER_EMAIL }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_GITHUB_TOKEN }}
+
+      - name: Validate input version
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          if ! [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+){2}$ ]]; then
+            echo "ERROR: version must be like 1.2.3"
+            exit 1
+          fi
+          # Ensure tag doesn't already exist
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "ERROR: tag $VERSION already exists"
+            exit 1
+          fi
+
+      - name: Update version in pyproject.toml
+        run: |
+          sed -i 's/^version = .*/version = "'"$VERSION"'"/' pyproject.toml
+          grep -n "^version = " pyproject.toml
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "${{ env.GITHUB_USER }}"
+          git config user.email "${{ env.GITHUB_USER_EMAIL }}"
+
+      - name: Commit release version
+        id: auto-commit
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: ":robot: Bump version to ${{ env.VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+
+      - name: Create tag
+        run: |
+          git tag "$VERSION"
+          git push origin "$VERSION"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: ${{ env.VERSION }}
+          generate_release_notes: true
