@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature or enhancement for yid-py
+about: Suggest a new feature or enhancement for yid
 title: "[FEATURE] "
 labels: enhancement
 assignees: ""
