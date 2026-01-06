@@ -6,7 +6,7 @@ applyTo: "**/*"
 
 ## Project Overview
 
-yid is a Python library for generating YouTube-style short IDs from numbers.
+youtube-id is a Python library for generating YouTube-style short IDs from numbers.
 Lightweight, fast, and reversible base62 encoder with optional obfuscation.
 
 ## Tech Stack

@@ -2,7 +2,7 @@
 
 Generate YouTube-style short IDs from numbers. Lightweight, fast, and reversible base62 encoder with optional obfuscation.
 
-[![PyPI version](https://badge.fury.io/py/yid.svg)](https://badge.fury.io/py/yid)
+[![PyPI version](https://badge.fury.io/py/youtube-id.svg)](https://badge.fury.io/py/youtube-id)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/wow-apps/yid-py)
@@ -10,9 +10,9 @@ Generate YouTube-style short IDs from numbers. Lightweight, fast, and reversible
 ## Other programming languages
 
 - **PHP**: [kvz/youtube-id](https://github.com/kvz/youtube-id)
-- **Python**: [wow-apps/yid-py](https://github.com/wow-apps/yid-py/)
-- **TypeScript**: [wow-apps/yid-ts](https://github.com/wow-apps/yid-ts/)
-- **Go Lang**: [wow-apps/yid-go](https://github.com/wow-apps/yid-go/)
+- **Python**: [wow-apps/youtube-id-py](https://github.com/wow-apps/youtube-id-py/)
+- **TypeScript**: [wow-apps/youtube-id-ts](https://github.com/wow-apps/youtube-id-ts/)
+- **Go**: [wow-apps/youtube-id-go](https://github.com/wow-apps/youtube-id-go/)
 
 ## Features
 
@@ -25,13 +25,13 @@ Generate YouTube-style short IDs from numbers. Lightweight, fast, and reversible
 ## Installation
 
 ```bash
-pip install yid
+pip install youtube-id
 ```
 
 Or with Poetry:
 
 ```bash
-poetry add yid
+poetry add youtube-id
 ```
 
 ## Quick Start
