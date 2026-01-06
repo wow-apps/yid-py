@@ -76,11 +76,7 @@ class TestToAlphanumeric:
 
     def test_combined_options(self) -> None:
         """Test conversion with multiple options."""
-        result = to_alphanumeric(
-            12345,
-            secure_key="secret",
-            transform=Transform.UPPER
-        )
+        result = to_alphanumeric(12345, secure_key="secret", transform=Transform.UPPER)
         assert isinstance(result, str)
         assert result.isupper()
 
@@ -335,7 +331,10 @@ class TestEdgeCases:
     def test_dictionary_characters(self) -> None:
         """Test that output only contains valid dictionary characters."""
         import string
-        valid_chars = set(string.ascii_lowercase + string.digits + string.ascii_uppercase)
+
+        valid_chars = set(
+            string.ascii_lowercase + string.digits + string.ascii_uppercase
+        )
 
         for num in [0, 1, 62, 100, 12345, 999999]:
             result = to_alphanumeric(num)

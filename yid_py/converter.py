@@ -12,13 +12,16 @@ import math
 import string
 from enum import Enum, auto
 
+
 class ConverterError(ValueError):
     """Raised when conversion fails."""
+
     pass
 
 
 class Transform(Enum):
     """Transformation options for alphanumeric output."""
+
     NONE = auto()
     UPPER = auto()
     LOWER = auto()
@@ -33,7 +36,7 @@ def to_alphanumeric(
     number: int,
     pad_up: int = 0,
     secure_key: str | None = None,
-    transform: Transform = Transform.NONE
+    transform: Transform = Transform.NONE,
 ) -> str:
     """
     Convert a number to a short alphanumeric string.
@@ -59,9 +62,7 @@ def to_alphanumeric(
 
 
 def to_numeric(
-    alphanumeric: str,
-    pad_up: int = 0,
-    secure_key: str | None = None
+    alphanumeric: str, pad_up: int = 0, secure_key: str | None = None
 ) -> int:
     """
     Convert an alphanumeric string back to a number.
@@ -98,7 +99,7 @@ class Encoder:
         self,
         pad_up: int = 0,
         secure_key: str | None = None,
-        transform: Transform = Transform.NONE
+        transform: Transform = Transform.NONE,
     ):
         self._pad_up = pad_up
         self._secure_key = secure_key
@@ -131,7 +132,7 @@ class Encoder:
 def create(
     pad_up: int = 0,
     secure_key: str | None = None,
-    transform: Transform = Transform.NONE
+    transform: Transform = Transform.NONE,
 ) -> Encoder:
     """
     Create a reusable encoder with preset options.
@@ -154,6 +155,7 @@ def create(
 
 # --- Private functions ---
 
+
 def _secure_dictionary(secure_key: str) -> str:
     """
     Shuffle the dictionary based on a secure key.
@@ -169,9 +171,9 @@ def _secure_dictionary(secure_key: str) -> str:
     )
 
     paired = sorted(
-        zip(secure_hash[:_DICT_LEN], _DICTIONARY),
+        zip(secure_hash[:_DICT_LEN], _DICTIONARY, strict=False),
         key=lambda x: x[0],
-        reverse=True
+        reverse=True,
     )
 
     return "".join(char for _, char in paired)
@@ -189,7 +191,7 @@ def _num_to_alpha(number: int, dictionary: str, pad_up: int = 0) -> str:
     t = int(math.log(number, _DICT_LEN))
 
     while t >= 0:
-        bcp = _DICT_LEN ** t
+        bcp = _DICT_LEN**t
         index = (number // bcp) % _DICT_LEN
         output.append(dictionary[index])
         number -= index * bcp
@@ -203,7 +205,7 @@ def _alpha_to_num(alphanumeric: str, dictionary: str, pad_up: int = 0) -> int:
     result = 0
 
     for i, char in enumerate(reversed(alphanumeric)):
-        result += dictionary.index(char) * (_DICT_LEN ** i)
+        result += dictionary.index(char) * (_DICT_LEN**i)
 
     if pad_up > 1:
         result -= _DICT_LEN ** (pad_up - 1)
