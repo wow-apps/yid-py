@@ -1,0 +1,158 @@
+name: Quality Control
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check_changes:
+    name: Check File Changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_python_changes: ${{ steps.changes.outputs.python }}
+      has_markdown_changes: ${{ steps.changes.outputs.markdown }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Check for changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            python:
+              - '**/*.py'
+              - 'pyproject.toml'
+              - 'poetry.lock'
+            markdown:
+              - '**/*.md'
+              - '!CLAUDE.md'
+              - '.markdownlint.json'
+
+  python_quality:
+    name: Python Quality
+    runs-on: ubuntu-latest
+    needs: check_changes
+    if: needs.check_changes.outputs.has_python_changes == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Ruff Lint
+        run: |
+          echo "=== Ruff Lint Check ==="
+          poetry run ruff check .
+
+      - name: Ruff Format
+        run: |
+          echo "=== Ruff Format Check ==="
+          poetry run ruff format --check .
+
+      - name: Mypy Type Check
+        run: |
+          echo "=== Mypy Type Check ==="
+          poetry run mypy yid_py/
+
+      - name: Pytest with Coverage
+        run: |
+          echo "=== Running Tests ==="
+          poetry run pytest --cov=yid_py --cov-report=term-missing --cov-fail-under=95
+
+  markdown_quality:
+    name: Markdown Quality
+    runs-on: ubuntu-latest
+    needs: check_changes
+    if: needs.check_changes.outputs.has_markdown_changes == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      - name: Markdown Lint
+        run: |
+          echo "=== Markdown Lint ==="
+          poetry run pymarkdownlnt scan README.md CONTRIBUTING.md CODE_OF_CONDUCT.md
+
+  summary:
+    name: Quality Summary
+    runs-on: ubuntu-latest
+    needs: [check_changes, python_quality, markdown_quality]
+    if: always()
+    steps:
+      - name: Check Results
+        run: |
+          echo "=== Quality Control Summary ==="
+
+          if [[ "${{ needs.check_changes.outputs.has_python_changes }}" == "true" ]]; then
+            if [[ "${{ needs.python_quality.result }}" == "success" ]]; then
+              echo "✅ Python Quality: Passed"
+            elif [[ "${{ needs.python_quality.result }}" == "failure" ]]; then
+              echo "❌ Python Quality: Failed"
+            fi
+          else
+            echo "⏭️ Python Quality: Skipped (no changes)"
+          fi
+
+          if [[ "${{ needs.check_changes.outputs.has_markdown_changes }}" == "true" ]]; then
+            if [[ "${{ needs.markdown_quality.result }}" == "success" ]]; then
+              echo "✅ Markdown Quality: Passed"
+            elif [[ "${{ needs.markdown_quality.result }}" == "failure" ]]; then
+              echo "❌ Markdown Quality: Failed"
+            fi
+          else
+            echo "⏭️ Markdown Quality: Skipped (no changes)"
+          fi
+
+          # Fail if any required job failed
+          if [[ "${{ needs.python_quality.result }}" == "failure" ]] || [[ "${{ needs.markdown_quality.result }}" == "failure" ]]; then
+            exit 1
+          fi
