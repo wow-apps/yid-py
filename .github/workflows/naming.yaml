@@ -26,7 +26,7 @@ jobs:
           echo "PR Title: $pr_title"
 
           # Valid prefixes
-          prefixes="feature/|fix/|docs/|refactor/|test/"
+          prefixes="feature/|fix/|docs/|refactor/|test/|dependabot/"
 
           # Validate branch name
           if [[ "$branch_name" =~ ^($prefixes) ]]; then
