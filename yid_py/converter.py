@@ -208,7 +208,7 @@ def _alpha_to_num(alphanumeric: str, dictionary: str, pad_up: int = 0) -> int:
         result += dictionary.index(char) * (_DICT_LEN**i)
 
     if pad_up > 1:
-        result -= _DICT_LEN**(pad_up - 1)
+        result -= _DICT_LEN ** (pad_up - 1)
 
     return result
 
